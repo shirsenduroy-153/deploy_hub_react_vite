@@ -1,10 +1,10 @@
 app_name: "deploy_hub_react_vite"
-framework: "react_vite"
+framework: "react"
 deployment_type: "compose"
 environment: "production"
 port: 3000
 working_directory: "./"
 install_command: "npm install"
 build_command: "npm run build"
-start_command: "npx serve -s dist -l 3000"
+start_command: "npm run preview -- --port 3000"
 output_dir: "dist"
