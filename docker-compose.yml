@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  deploy-hub-react-vite-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: deploy-hub-react-vite-app:latest
+    container_name: deploy_hub_react_vite_container
+    ports:
+      - "3000:80"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

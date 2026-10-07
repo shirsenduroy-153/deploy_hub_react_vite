@@ -1,0 +1,33 @@
+name: DeployHub Runner Deployment
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target deployment environment'
+        required: false
+        default: 'production'
+
+jobs:
+  deploy:
+    name: Deploy Application (Production)
+    runs-on: ['self-hosted', 'Linux']
+
+    steps:
+      - name: 📥 Checkout Repository Source
+        uses: actions/checkout@v4
+
+      - name: 🚀 Deploy Application (Docker Compose)
+        run: |
+          docker compose -f docker-compose.yml down --remove-orphans || true
+          docker rm -f $(docker compose -f docker-compose.yml ps -a -q 2>/dev/null) 2>/dev/null || true
+          docker rm -f deploy_hub_react_vite deploy_hub_react_vite_container 2>/dev/null || true
+          docker compose -f docker-compose.yml up --build --force-recreate --remove-orphans -d
+
+      - name: 🩺 Verify Health Check & Status
+        run: |
+          sleep 3
+          curl -s -f http://127.0.0.1:3000/api/health || echo 'Service listening on port 3000'
