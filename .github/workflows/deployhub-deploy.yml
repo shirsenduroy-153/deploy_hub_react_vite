@@ -20,22 +20,15 @@ jobs:
       - name: 📥 Checkout Repository Source
         uses: actions/checkout@v4
 
-      - name: 🔐 Setup Environment Secrets
-        run: |
-          cat << 'EOF' > .env
-SHIRSENDU123=Password@123
-          EOF
-          chmod 600 .env
-
       - name: 🚀 Deploy Application (Docker Compose)
         run: |
           docker compose -f docker-compose.yml down --remove-orphans || true
           docker rm -f $(docker compose -f docker-compose.yml ps -a -q 2>/dev/null) 2>/dev/null || true
           docker rm -f deploy_hub_react_vite deploy_hub_react_vite_container deploy_testing_container 2>/dev/null || true
-          sed -i -E 's/([0-9]+):([0-9]+)/3000:\2/g' docker-compose.yml 2>/dev/null || true
+          sed -i -E 's/([0-9]+):([0-9]+)/3001:\2/g' docker-compose.yml 2>/dev/null || true
           docker compose -f docker-compose.yml up --build --force-recreate --remove-orphans -d
 
       - name: 🩺 Verify Health Check & Status
         run: |
           sleep 3
-          curl -s -f http://127.0.0.1:3000/ || echo 'Service listening on port 3000'
+          curl -s -f http://127.0.0.1:3001/ || echo 'Service listening on port 3001'
